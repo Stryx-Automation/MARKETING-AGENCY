@@ -1519,14 +1519,52 @@
 
       setLoading(true);
 
-      try {
-        /* ---------- ВАРИАНТ А: Google Apps Script (рекомендуется) ---------- */
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(data)
-        });
+            try {
+        /* ---------- Отправка через невидимую HTML-форму ----------
+           Работает надёжнее fetch в браузерах: данные гарантированно
+           уходят на сервер, обходя CORS и ограничения no-cors. */
+
+        const iframeName = 'hidden_iframe_' + Date.now();
+
+        // 1. Создаём невидимый iframe — он примет ответ скрипта,
+        //    чтобы страница не перезагрузилась
+        const hiddenIframe = document.createElement('iframe');
+        hiddenIframe.name = iframeName;
+        hiddenIframe.style.display = 'none';
+        document.body.appendChild(hiddenIframe);
+
+        // 2. Создаём невидимую форму
+        const hiddenForm = document.createElement('form');
+        hiddenForm.method = 'POST';
+        hiddenForm.action = APPS_SCRIPT_URL;
+        hiddenForm.target = iframeName;
+        hiddenForm.style.display = 'none';
+
+        // 3. Кладём в форму все поля из data
+        for (const key in data) {
+          if (Object.prototype.hasOwnProperty.call(data, key)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = data[key];
+            hiddenForm.appendChild(input);
+          }
+        }
+
+        document.body.appendChild(hiddenForm);
+
+        // 4. Отправляем форму
+        hiddenForm.submit();
+
+        // 5. Убираем форму и iframe через секунду, чтобы не мусорить в DOM
+        setTimeout(() => {
+          hiddenForm.remove();
+          hiddenIframe.remove();
+        }, 1500);
+
+        // Небольшая пауза, чтобы запрос успел уйти, прежде чем
+        // показать экран «Спасибо»
+        await new Promise((resolve) => setTimeout(resolve, 700));
 
         /* ---------- ВАРИАНТ Б: напрямую в Telegram (только для теста) ----------
         const message =
