@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#4ade80" />
+    </linearGradient>
+  </defs>
+  <!-- Градиентный квадрат с закругленными углами -->
+  <rect width="24" height="24" rx="6" fill="url(#grad)" />
+  <!-- Ваша стрелка -->
+  <path d="M3 17l6-6 4 4 8-8" stroke="#06121f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <path d="M21 7v6h-6" stroke="#06121f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+</svg>
